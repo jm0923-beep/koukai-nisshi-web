@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src https://www.googleapis.com; frame-src blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#14213D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="航海日誌">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>航海日誌</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;800&family=BIZ+UDPGothic:wght@400;700&family=JetBrains+Mono:wght@400;500&family=DotGothic16&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1.0.34-mumi2lcu">
+<link rel="stylesheet" href="web.css?v=1.0.34-mumi2lcu">
+</head>
+<body>
+
+<!-- ===== password gate ===== -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-mark"><span class="compass"><svg class="pixel-compass" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 0h6v1h-6zM3 1h2v1h-2zM11 1h2v1h-2zM2 2h1v1h-1zM13 2h1v1h-1zM1 3h1v1h-1zM14 3h1v1h-1zM1 4h1v1h-1zM14 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM0 6h1v1h-1zM15 6h1v1h-1zM0 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM5 8h2v1h-2zM9 8h2v1h-2zM15 8h1v1h-1zM0 9h1v1h-1zM5 9h6v1h-6zM15 9h1v1h-1zM0 10h1v1h-1zM6 10h4v1h-4zM15 10h1v1h-1zM1 11h1v1h-1zM6 11h4v1h-4zM14 11h1v1h-1zM1 12h1v1h-1zM7 12h2v1h-2zM14 12h1v1h-1zM2 13h1v1h-1zM7 13h2v1h-2zM13 13h1v1h-1zM3 14h2v1h-2zM11 14h2v1h-2zM5 15h6v1h-6z"/><path fill="#CBA35F" d="M7 2h2v1h-2zM7 3h2v1h-2zM6 4h4v1h-4zM6 5h4v1h-4zM5 6h6v1h-6zM5 7h2v1h-2zM9 7h2v1h-2z"/></svg></span><h1 class="gate-title serif">航海日誌</h1></div>
+    <p class="gate-sub" id="gateSub">記録は合言葉で暗号化したうえで、あなたのGoogleドライブに保存されます。</p>
+
+    <div class="gate-error" id="gateError"></div>
+
+    <div id="gateLoading" style="text-align:center;color:var(--ink-soft);font-size:13px;padding:18px 0;">
+      <span id="gateLoadingText">確認しています…</span>
+    </div>
+
+    <div id="gateFatal" style="display:none;">
+      <div class="gate-error" style="display:block;">読み込み中に問題が発生しました。通信状況をご確認のうえ、もう一度お試しください。</div>
+      <p class="gate-fatal-detail mono" id="gateFatalDetail"></p>
+      <button class="btn btn-ghost" id="gateRetryBtn">もう一度試す</button>
+    </div>
+
+    <div id="gateConfigView" style="display:none;">
+      <p class="gate-text">Google Cloud Consoleからダウンロードした <span class="mono">client_secret_….json</span> を読み込んでください。</p>
+      <div class="gate-btns">
+        <button class="btn btn-primary" id="importClientBtn">Googleからダウンロードしたファイルを読み込む</button>
+      </div>
+      <p class="gate-text" style="margin-top:18px;">または、次の設定ファイルにクライアントIDとシークレットを直接書き込むこともできます。</p>
+      <code class="path-box" id="configPathLabel"></code>
+      <div class="gate-btns">
+        <button class="btn btn-ghost" id="openConfigBtn">設定ファイルを開く</button>
+        <button class="btn btn-ghost" id="reloadConfigBtn">書き込んだので再読み込み</button>
+      </div>
+    </div>
+
+    <div id="gateAuthView" style="display:none;">
+      <p class="gate-text">Googleドライブに接続します。ボタンを押すとブラウザが開くので、Googleアカウントでログインしてアクセスを許可してください。許可するのは、このアプリが作ったファイルへのアクセスだけです。</p>
+      <button class="btn btn-primary" id="loginBtn">Googleでログイン</button>
+      <div class="gate-waiting" id="authWaiting" style="display:none;">
+        ブラウザでの操作を待っています…<button id="cancelLoginBtn">中止</button>
+      </div>
+    </div>
+
+    <div id="gateSetupView" style="display:none;">
+      <div class="field">
+        <label for="setupPw1">合言葉（パスワード）を決めてください</label>
+        <input type="password" id="setupPw1" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label for="setupPw2">もう一度入力してください</label>
+        <input type="password" id="setupPw2" autocomplete="new-password">
+      </div>
+      <button class="btn btn-primary" id="setupSubmit">日誌をはじめる</button>
+      <div class="gate-toggle">
+        以前の航海日誌で書き出したバックアップをお持ちなら、<button id="showRestoreFromSetup">読み込んで復元</button>できます。
+      </div>
+      <div class="gate-note">
+        この合言葉は保存されません。忘れると中身は二度と読み出せなくなります。書き出したバックアップと合わせて、合言葉も別の安全な場所に控えておくことをおすすめします。
+      </div>
+    </div>
+
+    <div id="gateClosedView" style="display:none;">
+      <p class="gate-closed-title">終了しました</p>
+      <p class="gate-text">記録はすべてGoogleドライブに保存されています。日誌には鍵がかかりました。<br>
+        この画面は、このまま閉じてかまいません（iPhoneでは、ホーム画面に戻るか、Safariのタブを閉じてください）。</p>
+      <button class="btn btn-ghost" id="reopenBtn">もう一度開く</button>
+    </div>
+
+    <div id="gateUnlockView" style="display:none;">
+      <div class="field">
+        <label for="unlockPw">合言葉を入力してください</label>
+        <input type="password" id="unlockPw" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" id="unlockSubmit">ロックを解除する</button>
+      <div class="gate-toggle">
+        合言葉を忘れた場合、データ自体は残っていても中身を読み出すことはできません。<br>
+        別のバックアップファイルをお持ちなら、<button id="showRestoreFromGate">読み込んで復元</button>できます（今のドライブ上の日誌は別名で残ります）。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== main app ===== -->
+<div id="app">
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="compass"><svg class="pixel-compass" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 0h6v1h-6zM3 1h2v1h-2zM11 1h2v1h-2zM2 2h1v1h-1zM13 2h1v1h-1zM1 3h1v1h-1zM14 3h1v1h-1zM1 4h1v1h-1zM14 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM0 6h1v1h-1zM15 6h1v1h-1zM0 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM5 8h2v1h-2zM9 8h2v1h-2zM15 8h1v1h-1zM0 9h1v1h-1zM5 9h6v1h-6zM15 9h1v1h-1zM0 10h1v1h-1zM6 10h4v1h-4zM15 10h1v1h-1zM1 11h1v1h-1zM6 11h4v1h-4zM14 11h1v1h-1zM1 12h1v1h-1zM7 12h2v1h-2zM14 12h1v1h-1zM2 13h1v1h-1zM7 13h2v1h-2zM13 13h1v1h-1zM3 14h2v1h-2zM11 14h2v1h-2zM5 15h6v1h-6z"/><path fill="#CBA35F" d="M7 2h2v1h-2zM7 3h2v1h-2zM6 4h4v1h-4zM6 5h4v1h-4zM5 6h6v1h-6zM5 7h2v1h-2zM9 7h2v1h-2z"/></svg></span>
+        <div>
+          <h1 class="serif">航海日誌</h1>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span class="sync-status" id="syncStatus"></span>
+        <button class="icon-btn" id="themeToggle" title="配色を切り替え">☾ 配色</button>
+        <button class="icon-btn" id="lockBtn" title="ロックする">🔒 ロック</button>
+        <button class="icon-btn icon-btn-quit" id="quitBtn" title="保存を確かめてから終了します">⏻ 終了</button>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <div>
+        <p class="side-section-label">カテゴリ</p>
+        <ul class="cat-list" id="catList"></ul>
+        <div class="add-cat-row">
+          <input type="text" id="newCatName" placeholder="＋ カテゴリを追加">
+          <button class="btn btn-ghost btn-small" id="addCatBtn">追加</button>
+        </div>
+        <div class="mini-cal" id="miniCal"></div>
+        <div class="side-tags" id="sideTags"></div>
+      </div>
+      <div>
+        <p class="side-section-label">書き出し・バックアップ</p>
+        <ul class="tool-list">
+          <li class="tool-item"><button id="btnNewEntry">＋ 新しい記録</button></li>
+          <li class="tool-item"><button id="btnExportBackup" title="すべての記録と画像を、暗号化したまま1つのファイルに保存します">バックアップを書き出す</button></li>
+          <li class="tool-item"><button id="btnImportBackup">バックアップを読み込む</button></li>
+          <li class="tool-item"><button id="btnPrintMany">まとめて印刷・PDF（A4）</button></li>
+          <li class="tool-item"><button id="btnExportMd" title="ブログなどに流用する下書き用。暗号化はされません">Markdownで書き出す</button></li>
+          <li class="tool-item"><button id="btnChangePw">合言葉を変更する</button></li>
+          <li class="tool-item"><button id="btnLogout">Googleアカウント接続を解除</button></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="content">
+      <div class="content-inner" id="viewRoot"></div>
+    </main>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="application/json,.json" style="display:none;">
+<div class="toast" id="toast"></div>
+
+<script src="config.js?v=1.0.34-mumi2lcu"></script>
+<script src="nisshi-web.js?v=1.0.34-mumi2lcu"></script>
+<script src="image-editor.js?v=1.0.34-mumi2lcu"></script>
+<script src="board-editor.js?v=1.0.34-mumi2lcu"></script>
+<script src="rich-editor.js?v=1.0.34-mumi2lcu"></script>
+<script src="app.js?v=1.0.34-mumi2lcu"></script>
+</body>
+</html>
