@@ -1,0 +1,74 @@
+/* Web版（iPhone・iPad）だけに効く見た目の調整。パソコン版には読み込まれない。 */
+
+/* iPhoneは16px未満の入力欄に触れると画面を拡大してしまう */
+@media (max-width: 1024px){
+  input, textarea, select{ font-size:16px !important; }
+}
+
+/* ホーム画面から開いたとき、上端（時計の帯）に重ならないように */
+#gate{ padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+
+/* 指で押しやすい大きさ */
+@media (pointer: coarse){
+  .icon-btn{ min-height:38px; }
+  .cat-item{ padding:10px 12px; }
+  .tool-item button{ min-height:38px; }
+}
+
+@media (max-width: 760px){
+  header.topbar{ padding-left:14px; padding-right:14px; }
+  .brand h1{ font-size:20px; }
+  .brand .compass{ width:24px; height:24px; }
+  .topbar-actions{ gap:6px; }
+  .icon-btn{ padding:6px 9px; font-size:12.5px; }
+  .sync-status{ font-size:11px; margin-right:2px; }
+  nav.sidebar{ -webkit-overflow-scrolling:touch; }
+  .modal{ max-width:calc(100vw - 24px); }
+}
+@media (max-width: 430px){
+  /* 狭い画面では「保存済み」の文字を省き、記号だけにする */
+  .sync-status{ max-width:1.6em; overflow:hidden; }
+}
+
+/* 添付ファイルを画面いっぱいに表示するパネル */
+.web-file-viewer{ position:fixed; inset:0; z-index:90; background:var(--bg); display:flex; flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+.web-file-bar{ display:flex; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid var(--line); background:var(--bg-raised); }
+.web-file-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; }
+.web-file-bar .btn{ white-space:nowrap; text-decoration:none; }
+.web-file-body{ flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; }
+.web-file-frame{ width:100%; height:100%; border:0; background:#fff; display:block; }
+.web-file-msg{ padding:24px 16px; text-align:center; color:var(--ink-soft); font-size:14px; line-height:1.7; }
+
+/* Google再接続のパネル */
+.web-reconnect-text{ font-size:13.5px; line-height:1.7; color:var(--ink-soft); margin:0 0 14px; }
+.web-reconnect-error{ font-size:13px; color:var(--danger); margin:0 0 12px; }
+.web-reconnect .modal-actions .btn{ white-space:nowrap; }
+
+/* 日付欄：iPhoneのSafariは日付欄を中身の幅より狭くできず、隣のカテゴリ欄に重なる。
+   標準の見た目を外して、枠の幅に収める。見出しが2行になっても入力欄の下端は揃える。 */
+input[type="date"]{
+  -webkit-appearance:none; appearance:none;
+  display:block; min-width:0; max-width:100%;
+  min-height:42px; line-height:1.3; text-align:left;
+}
+input[type="date"]::-webkit-date-and-time-value{ text-align:left; margin:0; }
+select{ min-height:42px; }
+.field-row .field{ display:flex; flex-direction:column; justify-content:flex-end; min-width:0; }
+.field-row .field > label{ flex:1; }
+
+/* iPhone縦画面：上部のメニューを横一列に詰め込むと、ボタンが1文字幅まで縮んで縦書きになる。
+   カテゴリは横にスクロール、道具のボタンは横書きのまま折り返して並べる。 */
+@media (max-width: 760px){
+  .shell{ grid-template-columns:minmax(0,1fr); }
+  nav.sidebar{ flex-direction:column; overflow-x:hidden; min-width:0; align-items:stretch; gap:10px; padding:10px 12px 12px; }
+  nav.sidebar > div{ min-width:0; max-width:100%; }
+  .cat-list{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px; }
+  .tag-list{ flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; padding-bottom:2px; }
+  .add-cat-row{ max-width:360px; }
+  .tool-list{ flex-wrap:wrap; gap:6px; }
+  .tool-item button{
+    width:auto; white-space:nowrap; font-size:12.5px; padding:6px 10px;
+    border:1px solid var(--line); background:var(--bg-raised);
+  }
+}
