@@ -1,0 +1,168 @@
+/* Web版（iPhone・iPad）だけに効く見た目の調整。パソコン版には読み込まれない。 */
+
+/* iPhoneは16px未満の入力欄に触れると画面を拡大してしまう */
+@media (max-width: 1024px){
+  input, textarea, select{ font-size:16px !important; }
+}
+
+/* ホーム画面から開いたとき、上端（時計の帯）に重ならないように */
+#gate{ padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+
+/* 指で押しやすい大きさ */
+@media (pointer: coarse){
+  .icon-btn{ min-height:38px; }
+  .cat-item{ padding:10px 12px; }
+  .tool-item button{ min-height:38px; }
+}
+
+@media (max-width: 760px){
+  header.topbar{ padding-left:14px; padding-right:14px; }
+  .brand h1{ font-size:20px; }
+  .brand .compass{ width:24px; height:24px; }
+  .topbar-actions{ gap:6px; }
+  .icon-btn{ padding:6px 9px; font-size:12.5px; }
+  .sync-status{ margin-right:2px; }
+  nav.sidebar{ -webkit-overflow-scrolling:touch; }
+  .modal{ max-width:calc(100vw - 24px); }
+}
+@media (max-width: 430px){
+  /* メモと配色のボタンは記号だけにする（上のバーを1行に収める） */
+  .btn-label{ display:none; }
+  .icon-btn{ padding:6px 6px; }
+  /* 「＋ 新しい記録」を上のバーに足したので、題名が2行に割れないよう少し小さくして1行にする */
+  .brand h1{ white-space:nowrap; font-size:17px; }
+  .topbar-actions{ gap:5px; }
+}
+
+/* 添付ファイルを画面いっぱいに表示するパネル */
+.web-file-viewer{ position:fixed; inset:0; z-index:90; background:var(--bg); display:flex; flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+.web-file-bar{ display:flex; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid var(--line); background:var(--bg-raised); }
+.web-file-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; }
+.web-file-bar .btn{ white-space:nowrap; text-decoration:none; }
+.web-file-body{ flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; }
+.web-file-body.web-file-pdf{ overflow:hidden; }
+.web-file-frame{ width:100%; height:100%; border:0; background:#fff; display:block; }
+.web-file-msg{ padding:24px 16px; text-align:center; color:var(--ink-soft); font-size:14px; line-height:1.7; }
+
+/* Google再接続のパネル */
+.web-reconnect-text{ font-size:13.5px; line-height:1.7; color:var(--ink-soft); margin:0 0 14px; }
+.web-reconnect-error{ font-size:13px; color:var(--danger); margin:0 0 12px; }
+.web-reconnect .modal-actions .btn{ white-space:nowrap; }
+
+/* 日付欄：iPhoneのSafariは日付欄を中身の幅より狭くできず、隣のカテゴリ欄に重なる。
+   標準の見た目を外して、枠の幅に収める。見出しが2行になっても入力欄の下端は揃える。 */
+input[type="date"]{
+  -webkit-appearance:none; appearance:none;
+  display:block; min-width:0; max-width:100%;
+  min-height:42px; line-height:1.3; text-align:left;
+}
+input[type="date"]::-webkit-date-and-time-value{ text-align:left; margin:0; }
+select{ min-height:42px; }
+.field-row .field{ display:flex; flex-direction:column; justify-content:flex-end; min-width:0; }
+.field-row .field > label{ flex:1; }
+
+/* iPhone縦画面：v1.0.206 から左の欄は ☰ で出す引き出し（style.css の html.drawer-mode）。
+   上に詰めて並べるための決まりは要らなくなったので外した。 */
+@media (max-width: 760px){
+  .shell{ grid-template-columns:minmax(0,1fr); }
+}
+
+/* v1.0.190：iPhone・iPad では左の欄の「バックアップを書き出す」から「Googleとの接続を解除」までを出さない
+   （縦・横どちらの画面でも）。「＋ 新しい記録」だけ残すので、見出し「書き出し・バックアップ」も出さない。 */
+.tool-item:has(#btnExportBackup), .tool-item:has(#btnImportBackup), .tool-item:has(#btnPrintMany),
+.tool-item:has(#btnExportMd), .tool-item:has(#btnChangePw), .tool-item:has(#btnLogout){ display:none; }
+nav.sidebar > div:has(#btnExportBackup) > .side-section-label{ display:none; }
+
+/* v1.0.190：記録を開いて読むときは、上のバーと左の欄を隠して画面いっぱいに出す（app.js が body に full-view）。
+   「← 一覧へ戻る」の行は残り、押すと元に戻る。 */
+body.full-view header.topbar, body.full-view nav.sidebar{ display:none; }
+body.full-view .shell{ grid-template-columns:minmax(0,1fr); grid-template-rows:1fr; }
+body.full-view .view-sticky{ top:env(safe-area-inset-top,0px); }
+
+/* v1.0.190：文字を全体に少し小さく、読みやすさを優先（行の間は少し広げる）。
+   本文の文字の大きさの指定（--body-pt）も同じ割合にする。編集欄も同じ .view-body を使うので、読む画面と同じ。
+   紙面（広い画面）は印刷と同じ大きさのまま、拡大しすぎないよう app.js で 100% までにした。 */
+body{ font-size:14px; }
+button, textarea{ font-size:14px; }
+.view-body{ font-size:14.5px; --lh-ratio:1.8; --body-pt:calc(14.5px / 10.5); }
+.view-title{ font-size:22px; }
+.list-head h2{ font-size:18px; }
+.entry-title{ font-size:15px; }
+.entry-snippet{ font-size:12.5px; line-height:1.7; }
+.cat-item{ font-size:13px; }
+.back-link{ font-size:13px; }
+
+/* v1.0.191：iPhone・iPad では記録は読むだけ（書くのはメモ・TO DO だけ。app.js の READ_ONLY）。
+   新しい記録・カテゴリの追加と削除・タグの編集を出さない。重要マークは付いているものだけ見せ、押すと記録が開く。 */
+#topNewBtn, nav.sidebar > div:has(#btnNewEntry), .add-cat-row, .cat-del, #tagManageBtn{ display:none !important; }
+.entry-mark{ pointer-events:none; }
+.entry-mark:not(.on){ display:none; }
+.plan-ro{ gap:10px; font-size:13.5px; line-height:1.6; padding:2px 0; }
+.plan-ro-time{ flex:none; min-width:3em; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+.plan-ro-text{ flex:1; min-width:0; overflow-wrap:anywhere; }
+
+/* v1.0.192：iPhone の横画面で Safari が文字を勝手に大きくしないように（左の欄が細いのに文字が大きいまま、指で横に動いた） */
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+
+/* v1.0.191：左の欄（iPad・iPhone の横画面）を 240px → 190px に細くして、一覧の幅を広げる。
+   v1.0.192：パソコンのブラウザでは前の広さ（240px）のまま。iPhone・iPad（nisshi-web.js が html に touch-device）だけ細くし、
+   その分、左の欄の文字を少し小さくする。横にははみ出さず、指で横に動かない。 */
+@media (min-width: 761px){
+  html.touch-device body:not(.full-view) .shell{ grid-template-columns:190px minmax(0,1fr); }   /* 読む画面（full-view）は左の欄なしの1列のまま */
+  html.touch-device .content-inner:not(.page-wide){ max-width:1100px; }   /* 一覧の列：912px まで → 1100px まで */
+  html.touch-device nav.sidebar{ padding:14px 10px 20px; gap:16px; overflow-x:hidden; touch-action:pan-y; }
+  html.touch-device .cal-head, html.touch-device .cal-month, html.touch-device .cal-grid, html.touch-device .side-todo{ max-width:none; }
+  html.touch-device .cal-toggle{ white-space:nowrap; font-size:11.5px; }
+  html.touch-device .cal-move{ width:24px; height:22px; font-size:13px; }
+  html.touch-device .cal-month{ font-size:12px; }
+  html.touch-device .cal-wd{ font-size:9.5px; }
+  html.touch-device .cal-day{ font-size:10.5px; height:22px; }
+  html.touch-device .side-section-label{ font-size:10px; }
+  html.touch-device .side-todo-note{ font-size:11px; }
+  html.touch-device .side-todo-item{ font-size:11.5px; }
+  html.touch-device .tag-chip, html.touch-device .tag-manage{ font-size:10.5px; padding:1px 7px; }
+  html.touch-device .cat-item{ padding:6px 8px; font-size:12px; }
+  html.touch-device .cat-count{ font-size:10.5px; }
+  html.touch-device .tool-item button{ font-size:12px; }
+}
+
+/* v1.0.191：iPhone の縦画面では、一覧の上の部分（上のバー・カレンダー・TO DO・カテゴリ・題と検索）を詰めて、
+   一覧の見える所を広げる。カレンダーと TO DO は横に並べ、カレンダーを開いたときだけ横いっぱいにする。 */
+@media (max-width: 760px){
+  header.topbar{ padding-top:calc(8px + env(safe-area-inset-top,0px)); padding-bottom:8px; padding-left:12px; padding-right:12px; }
+  .icon-btn{ white-space:nowrap; }
+  main.content{ padding-top:8px; }
+  .view-sticky:has(#searchInput){ display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; padding-top:4px; padding-bottom:8px; }
+  .view-sticky:has(#searchInput) > *{ margin-bottom:0 !important; }
+  .view-sticky:has(#searchInput) .list-head{ flex:0 1 auto; }
+  .view-sticky:has(#searchInput) .list-head h2{ font-size:16px; }
+  .view-sticky:has(#searchInput) .tag-filter{ flex-basis:100%; }
+  .view-sticky:has(#searchInput) .search-row{ flex:1 1 150px; }
+  .search-row input{ padding:6px 10px; min-width:0; }
+}
+
+/* v1.0.207：iPhone・iPad の横画面では、上のバー（航海日誌・メモ・TO DO など）を細く、文字も小さくする。
+   指で押しやすい大きさ（min-height 38px）が上のバーを太くしていた。 */
+@media (min-width: 761px) and (orientation: landscape){
+  html.touch-device header.topbar{ padding-top:calc(4px + env(safe-area-inset-top,0px)); padding-bottom:4px; padding-left:12px; padding-right:12px; }
+  html.touch-device .brand{ gap:7px; }
+  html.touch-device .brand h1{ font-size:16px; white-space:nowrap; }
+  html.touch-device .brand .compass{ width:18px; height:18px; }
+  html.touch-device .topbar-actions{ gap:5px; }
+  html.touch-device header.topbar .icon-btn{ min-height:28px; padding:2px 9px; font-size:12px; }
+  html.touch-device header.topbar .menu-btn{ font-size:15px; padding:2px 8px; }
+  html.touch-device .sync-status{ font-size:11px; }
+}
+/* v1.0.207：iPhone・iPad の広い画面（横画面・iPad 縦）でも、iPhone 縦画面と同じく「すべての記録」を小さくし、
+   その横に検索欄を並べる（一覧の見える所を広げる）。 */
+@media (min-width: 761px){
+  html.touch-device .view-sticky:has(#searchInput){ display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; padding-top:6px; padding-bottom:6px; }
+  html.touch-device .view-sticky:has(#searchInput) > *{ margin-bottom:0 !important; }
+  html.touch-device .view-sticky:has(#searchInput) .list-head{ flex:0 1 auto; gap:8px; }
+  html.touch-device .view-sticky:has(#searchInput) .list-head h2{ font-size:15px; }
+  html.touch-device .view-sticky:has(#searchInput) .tag-filter{ flex-basis:100%; }
+  html.touch-device .view-sticky:has(#searchInput) .search-row{ flex:1 1 200px; }
+  html.touch-device .view-sticky:has(#searchInput) .search-row input{ padding:5px 10px; min-width:0; }
+  html.touch-device .view-sticky:has(#searchInput) .btn-small{ padding:3px 8px; font-size:12px; }
+}
